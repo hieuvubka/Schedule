@@ -1,4 +1,5 @@
 import pyodbc
+from Crawler.ScheduleCrawler import ScheduleCrawler
 
 class InsertToDatabase():
     def __init__(self, studentCode):
@@ -16,8 +17,7 @@ class InsertToDatabase():
         if self.CheckData() == True:
             pass
         else:
-            self.In
-
+            self.InsertData()
 
     def CheckTable(self, tableName):
         dbcur = self.conn.cursor()
@@ -46,7 +46,7 @@ class InsertToDatabase():
                                         MaHP Char(10),
                                         TenLop nVARCHAR(50),
                                         GhiChu nVARCHAR(50),
-                                        PRIMARY KEY (MaSV))""")
+                                        PRIMARY KEY (MaSV, ThoiGian, MaLop ))""")
         cursor.commit()
 
     def CheckData(self):
@@ -63,9 +63,45 @@ class InsertToDatabase():
             return False
 
     def InsertData(self):
+        a = ScheduleCrawler(self.studenCode)
         cursor = self.conn.cursor()
+        for i in range(a.classCount):
+            cursor.execute("""INSERT INTO Schedule.dbo.Schedule
+                                (MaSV, 
+                                ThoiGian,
+                                Tuan,
+                                Phong,
+                                MaLop,
+                                LoaiLop,
+                                Nhom,
+                                MaHP,
+                                TenLop,
+                                GhiChu)
+                            VALUES 
+                                ('{maSV}',
+                                N'{ThoiGian}',
+                                '{Tuan}',
+                                '{Phong}',
+                                '{MaLop}',
+                                N'{LoaiLop}',
+                                N'{Nhom}',
+                                '{MaHP}',
+                                N'{TenLop}',
+                                N'{GhiChu}')"""
+                           .format(maSV= a.student_code,
+                                   ThoiGian= a.time[i],
+                                   Tuan= a.week[i],
+                                   Phong= a.room[i],
+                                   MaLop= a.classId[i],
+                                   LoaiLop= a.classType[i],
+                                   Nhom= a.group[i],
+                                   MaHP= a.subjectId[i],
+                                   TenLop= a.className[i],
+                                   GhiChu= a.note[i]))
+        cursor.commit()
+
+InsertToDatabase(20183916)
 
 
-a = InsertToDatabase(20183916)
 
 
