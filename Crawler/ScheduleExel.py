@@ -1,85 +1,52 @@
-
+#!/usr/local/bin/python
+# coding: utf-8
+import pandas as pd
 from Crawler.ScheduleCrawler import ScheduleCrawler
 from openpyxl import load_workbook
 
-class ScheduleExelTable():
+class a():
     def __init__(self, studentCode):
         schedule = ScheduleCrawler(studentCode)
-
-        self.fileName = 'ScheduleTable.xlsx'
-        self.wb = load_workbook(self.fileName)
-
-        if('%d' %(studentCode) in self.wb.sheetnames):
+        if schedule.classCount == 0:
             pass
         else:
-            sheet = self.wb.create_sheet("%d" % (studentCode))
-            sheet['A1'] = 'Mã SV'
-            sheet['B1'] = 'Thời gian'
-            sheet['C1'] = 'Tuần học'
-            sheet['D1'] = 'Phòng học'
-            sheet['E1'] = 'Mã lớp'
-            sheet['F1'] = 'Loại lớp'
-            sheet['G1'] = 'Nhóm'
-            sheet['H1'] = 'Mã HP'
-            sheet['I1'] = 'Tên lớp'
-            sheet['J1'] = 'Ghi chú'
+            self.fileName = 'ScheduleTable.xlsx'
+            self.wb = load_workbook(self.fileName)
+            sheet = self.wb.active
 
-            for i in range(0, schedule.classCount):
-                sheet['A%d' % (i + 2)] = schedule.student_code
-                sheet['B%d' % (i + 2)] = schedule.time[i]
-                sheet['C%d' % (i + 2)] = schedule.week[i]
-                sheet['D%d' % (i + 2)] = schedule.room[i]
-                sheet['E%d' % (i + 2)] = schedule.classId[i]
-                sheet['F%d' % (i + 2)] = schedule.classType[i]
-                sheet['G%d' % (i + 2)] = schedule.group[i]
-                sheet['H%d' % (i + 2)] = schedule.subjectId[i]
-                sheet['I%d' % (i + 2)] = schedule.className[i]
-                sheet['J%d' % (i + 2)] = schedule.note[i]
+            if(sheet['A1'] != 'Mã SV'):
+                sheet['A1'] = 'Mã SV'
+                sheet['B1'] = 'Thời gian'
+                sheet['C1'] = 'Tuần học'
+                sheet['D1'] = 'Phòng học'
+                sheet['E1'] = 'Mã lớp'
+                sheet['F1'] = 'Loại lớp'
+                sheet['G1'] = 'Nhóm'
+                sheet['H1'] = 'Mã HP'
+                sheet['I1'] = 'Tên lớp'
+                sheet['J1'] = 'Ghi chú'
 
-        self.wb.save(self.fileName)
-    # def writeSchedule(self, studentCode):
-    #     schedule = ScheduleCrawler(studentCode)
-    #     self.wb = Workbook()
-    #     sheet = self.wb.create_sheet("%d" %(studentCode))
-    #     sheet['A1'] = 'Mã SV'
-    #     sheet['B1'] = 'Thời gian'
-    #     sheet['C1'] = 'Tuần học'
-    #     sheet['D1'] = 'Phòng học'
-    #     sheet['E1'] = 'Mã lớp'
-    #     sheet['F1'] = 'Loại lớp'
-    #     sheet['G1'] = 'Nhóm'
-    #     sheet['H1'] = 'Mã HP'
-    #     sheet['I1'] = 'Tên lớp'
-    #     sheet['J1'] = 'Ghi chú'
+            check = 0
+            df = pd.read_excel(self.fileName)
+            check = df['Mã SV'].where(df['Mã SV'] == schedule.student_code)
 
+            if len(check.dropna()) > 0:
+                pass
+            else:
+                row = sheet.max_row
+                for j in range( schedule.classCount):
+                    sheet['A%d' % (j + row)] = schedule.student_code
+                    sheet['B%d' % (j + row)] = schedule.time[j]
+                    sheet['C%d' % (j + row)] = schedule.week[j]
+                    sheet['D%d' % (j + row)] = schedule.room[j]
+                    sheet['E%d' % (j + row)] = schedule.classId[j]
+                    sheet['F%d' % (j + row)] = schedule.classType[j]
+                    sheet['G%d' % (j + row)] = schedule.group[j]
+                    sheet['H%d' % (j + row)] = schedule.subjectId[j]
+                    sheet['I%d' % (j + row)] = schedule.className[j]
+                    sheet['J%d' % (j + row)] = schedule.note[j]
 
-        # sheet.write('A1','Mã SV')
-        # sheet.write('B1','Thời gian')
-        # sheet.write('C1', 'Tuần học')
-        # sheet.write('D1', 'Phòng học')
-        # sheet.write('E1', 'Mã lớp')
-        # sheet.write('F1', 'Loại lớp')
-        # sheet.write('G1', 'Nhóm')
-        # sheet.write('H1', 'Mã HP')
-        # sheet.write('I1', 'Tên lớp')
-        # sheet.write('J1', 'Ghi chú')
-
-        # for i in range(0, schedule.classCount):
-        #     sheet['A%d' %(i+2)] = schedule.student_code
-        #     sheet['B%d' %(i+2)] = schedule.time[i]
-        #     sheet['C%d' %(i+2)] = schedule.week[i]
-        #     sheet['D%d' %(i+2)] = schedule.room[i]
-        #     sheet['E%d' %(i+2)] = schedule.classId[i]
-        #     sheet['F%d' %(i+2)] = schedule.classType[i]
-        #     sheet['G%d' %(i+2)] = schedule.group[i]
-        #     sheet['H%d' %(i+2)] = schedule.subjectId[i]
-        #     sheet['I%d' %(i+2)] = schedule.className[i]
-        #     sheet['J%d' %(i+2)] = schedule.note[i]
-        #
-        # self.wb.save(filename= 'ScheduleTable.xlsx')
-
-
-b = ScheduleExelTable(20183915)
+            self.wb.save(self.fileName)
 
 
 
